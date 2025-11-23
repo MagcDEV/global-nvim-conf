@@ -118,15 +118,110 @@ dap.configurations.cs = {
 	},
 }
 
+-- Detect OS
+local is_windows = vim.fn.has("win32") == 1 or vim.fn.has("win64") == 1
+local sep = is_windows and "\\" or "/"
+
+-- C++ configuration using cpptools (Microsoft C++ debugger)
+dap.adapters.cppdbg = {
+	id = "cppdbg",
+	type = "executable",
+	command = is_windows
+		and vim.fn.stdpath("data") .. sep .. "mason" .. sep .. "packages" .. sep .. "cpptools" .. sep .. "extension" .. sep .. "debugAdapters" .. sep .. "bin" .. sep .. "OpenDebugAD7.exe"
+		or vim.fn.stdpath("data") .. sep .. "mason" .. sep .. "packages" .. sep .. "cpptools" .. sep .. "extension" .. sep .. "debugAdapters" .. sep .. "bin" .. sep .. "OpenDebugAD7",
+	options = {
+		detached = false,
+	},
+}
+
+-- C++ configuration using CodeLLDB
+dap.adapters.codelldb = {
+	type = "server",
+	port = "${port}",
+	executable = {
+		command = is_windows
+			and vim.fn.stdpath("data") .. sep .. "mason" .. sep .. "bin" .. sep .. "codelldb.cmd"
+			or vim.fn.stdpath("data") .. sep .. "mason" .. sep .. "bin" .. sep .. "codelldb",
+		args = { "--port", "${port}" },
+	},
+}
+
+-- Function to get the directory of current file
+local function get_source_dir()
+	local file_path = vim.fn.expand("%:p:h")
+	if file_path and file_path ~= "" then
+		return file_path
+	end
+	return vim.fn.getcwd()
+end
+
+dap.configurations.cpp = {
+	{
+		name = "Launch C++ (cpptools)",
+		type = "cppdbg",
+		request = "launch",
+		program = function()
+			local source_dir = get_source_dir()
+			local exe_name = is_windows and "hello.exe" or "hello"
+			local exe_path = source_dir .. sep .. exe_name
+			if vim.fn.filereadable(exe_path) == 1 then
+				return exe_path
+			end
+			return vim.fn.input("Path to executable: ", source_dir .. sep, "file")
+		end,
+		cwd = function()
+			return get_source_dir()
+		end,
+		stopAtEntry = true,
+		MIMode = "gdb",
+		miDebuggerPath = is_windows and "C:\\msys64\\ucrt64\\bin\\gdb.exe" or "/usr/bin/gdb",
+		setupCommands = {
+			{
+				description = "Enable pretty-printing for gdb",
+				text = "-enable-pretty-printing",
+				ignoreFailures = true,
+			},
+		},
+	},
+	{
+		name = "Launch C++ (codelldb)",
+		type = "codelldb",
+		request = "launch",
+		program = function()
+			local source_dir = get_source_dir()
+			local exe_name = is_windows and "hello.exe" or "hello"
+			local exe_path = source_dir .. sep .. exe_name
+			if vim.fn.filereadable(exe_path) == 1 then
+				return exe_path
+			end
+			return vim.fn.input("Path to executable: ", source_dir .. sep, "file")
+		end,
+		cwd = function()
+			return get_source_dir()
+		end,
+		stopOnEntry = true,
+	},
+	{
+		name = "Attach to process",
+		type = "cppdbg",
+		request = "attach",
+		processId = require("dap.utils").pick_process,
+		MIMode = "gdb",
+		miDebuggerPath = is_windows and "C:\\msys64\\ucrt64\\bin\\gdb.exe" or "/usr/bin/gdb",
+	},
+}
+
+dap.configurations.c = dap.configurations.cpp
+
 -- Modified listeners with vim.schedule
 dap.listeners.after.event_initialized["dapui_config"] = function()
 	vim.schedule(dapui.open)
 end
 dap.listeners.before.event_terminated["dapui_config"] = function()
-	vim.schedule(dapui.close)
+	-- Don't auto-close on terminate, let user close manually
 end
 dap.listeners.before.event_exited["dapui_config"] = function()
-	vim.schedule(dapui.close)
+	-- Don't auto-close on exit, let user close manually
 end
 
 -- Basic controls
@@ -153,6 +248,17 @@ end)
 -- Advanced breakpoints
 vim.keymap.set("n", "<leader>B", function()
 	require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: "))
+end)
+
+-- Open DAP REPL to see errors
+vim.keymap.set("n", "<leader>dr", function()
+	require("dap").repl.open()
+end)
+
+-- Terminate and close debugger
+vim.keymap.set("n", "<leader>dt", function()
+	require("dap").terminate()
+	require("dapui").close()
 end)
 
 vim.fn.sign_define("DapBreakpoint", {
