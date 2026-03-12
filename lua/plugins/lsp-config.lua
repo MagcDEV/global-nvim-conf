@@ -48,7 +48,7 @@ return {
 		end
 
 		ensure_start({ "lua" }, "lua_ls")
-		ensure_start({ "c", "cpp", "objc", "objcpp" }, "clangd")
+		ensure_start({ "c", "cpp", "objc", "objcpp", "gopls" }, "clangd")
 		-- C# handled by roslyn.nvim
 
 		vim.api.nvim_create_autocmd("LspAttach", {
