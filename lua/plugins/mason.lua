@@ -12,7 +12,20 @@ return {
 		},
 		config = function()
 			require("mason-lspconfig").setup({
-				ensure_installed = { "lua_ls" },
+				ensure_installed = { "lua_ls", "gopls" },
+			})
+		end,
+	},
+	{
+		"WhoIsSethDaniel/mason-tool-installer.nvim",
+		dependencies = {
+			"williamboman/mason.nvim",
+		},
+		config = function()
+			require("mason-tool-installer").setup({
+				ensure_installed = { "goimports", "gofumpt", "golangci-lint" },
+				auto_update = false,
+				run_on_start = true,
 			})
 		end,
 	},

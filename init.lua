@@ -19,6 +19,40 @@ require("config.lazy")
 --require("catppuccin").setup()
 --vim.cmd.colorscheme("flexoki-dark")
 vim.cmd.colorscheme("tokyonight-storm")
+
+local function apply_code_highlights()
+	vim.api.nvim_set_hl(0, "@function", { fg = "#7aa2f7", bold = true })
+	vim.api.nvim_set_hl(0, "@function.method", { fg = "#7aa2f7" })
+	vim.api.nvim_set_hl(0, "@function.call", { fg = "#7aa2f7" })
+	vim.api.nvim_set_hl(0, "@function.method.call", { fg = "#7aa2f7" })
+	vim.api.nvim_set_hl(0, "@constructor", { fg = "#7dcfff" })
+	vim.api.nvim_set_hl(0, "@type", { fg = "#7dcfff" })
+	vim.api.nvim_set_hl(0, "@type.builtin", { fg = "#2ac3de" })
+	vim.api.nvim_set_hl(0, "@module", { fg = "#bb9af7" })
+	vim.api.nvim_set_hl(0, "@variable.parameter", { fg = "#e0af68", italic = true })
+	vim.api.nvim_set_hl(0, "@variable.member", { fg = "#9ece6a" })
+
+	vim.api.nvim_set_hl(0, "@lsp.type.function", { link = "@function" })
+	vim.api.nvim_set_hl(0, "@lsp.type.method", { link = "@function.method" })
+	vim.api.nvim_set_hl(0, "@lsp.type.parameter", { link = "@variable.parameter" })
+	vim.api.nvim_set_hl(0, "@lsp.type.type", { link = "@type" })
+	vim.api.nvim_set_hl(0, "@lsp.type.namespace", { link = "@module" })
+	vim.api.nvim_set_hl(0, "@lsp.type.property", { link = "@variable.member" })
+
+	vim.api.nvim_set_hl(0, "RainbowDelimiterRed", { fg = "#f7768e" })
+	vim.api.nvim_set_hl(0, "RainbowDelimiterYellow", { fg = "#e0af68" })
+	vim.api.nvim_set_hl(0, "RainbowDelimiterBlue", { fg = "#7aa2f7" })
+	vim.api.nvim_set_hl(0, "RainbowDelimiterOrange", { fg = "#ff9e64" })
+	vim.api.nvim_set_hl(0, "RainbowDelimiterGreen", { fg = "#9ece6a" })
+	vim.api.nvim_set_hl(0, "RainbowDelimiterViolet", { fg = "#bb9af7" })
+	vim.api.nvim_set_hl(0, "RainbowDelimiterCyan", { fg = "#7dcfff" })
+end
+
+apply_code_highlights()
+vim.api.nvim_create_autocmd("ColorScheme", {
+	callback = apply_code_highlights,
+})
+
 -- Set the background transparency for Neovim
 vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
 vim.api.nvim_set_hl(0, "NormalNC", { bg = "none" })
