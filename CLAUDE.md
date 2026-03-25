@@ -1,0 +1,1 @@
+This is a neovim configuration folder, here lives the configurations of the text editor and the plugins that I use

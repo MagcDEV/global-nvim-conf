@@ -1,3 +1,3 @@
 return {
-    'kepano/flexoki-neovim', name = 'flexoki'
+    'kepano/flexoki-neovim', name = 'flexoki', lazy = true
 }

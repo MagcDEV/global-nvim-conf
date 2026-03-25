@@ -1,8 +1,7 @@
 return {
   "neanias/everforest-nvim",
   version = false,
-  lazy = false,
-  priority = 1000,
+  lazy = true,
   config = function()
     vim.opt.termguicolors = true
     vim.o.background = "dark"  -- switched to dark variant
