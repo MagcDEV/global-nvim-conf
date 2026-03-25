@@ -184,4 +184,21 @@ return {
 	},
 	{ "theHamsta/nvim-dap-virtual-text" },
 	{ "NicholasMata/nvim-dap-cs" },
+	{
+		"leoluz/nvim-dap-go",
+		dependencies = { "mfussenegger/nvim-dap" },
+		ft = "go",
+		config = function()
+			require("dap-go").setup({
+				delve = {
+					path = "dlv",
+					initialize_timeout_sec = 20,
+					port = "${port}",
+					args = {},
+					build_flags = {},
+					detached = vim.fn.has("win32") == 0,
+				},
+			})
+		end,
+	},
 }
