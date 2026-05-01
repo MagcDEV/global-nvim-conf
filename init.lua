@@ -15,6 +15,7 @@ vim.cmd("set rnu")
 vim.cmd("set cursorline")
 vim.opt.termguicolors = true
 vim.opt.shadafile = "NONE"
+vim.opt.clipboard = "unnamedplus"
 
 require("config.lazy")
 
